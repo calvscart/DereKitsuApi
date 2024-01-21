@@ -1,6 +1,8 @@
 const express = require("express")
 const morgan = require("morgan")
 const nocache = require('nocache')
+const compression = require("compression")
+const compress_images = require("compress-images")
 const fs = require('fs');
 require("dotenv").config()
 
@@ -10,6 +12,7 @@ const router = require("./src/router.js")
 
 app.use(express.json())
 app.use(morgan("dev"))
+app.use(compression({level : 9, memlevel: 9, strategy: 4}))
 app.use(nocache())
 app.use("/", router)
 
@@ -28,6 +31,21 @@ app.listen(port, () =>{
     console.log(`App is now listening on port ${port}`)
 })
 
+const compress = (pathFromFile, pathToFile) => {
+    compress_images(pathFromFile, pathToFile, { compress_force: false, statistic: true, autoupdate: true }, false,
+    { jpg: { engine: "mozjpeg", command: ["-quality", "60"] } },
+    { png: { engine: 'webp', command: false} },
+    { svg: { engine: "svgo", command: "--multipass" } },
+    { gif: { engine: "gifsicle", command: ["--colors", "64", "--use-col=web"] } },
+    function (error, completed, statistic) {
+        console.log("-------------");
+        console.log(error);
+        console.log(completed);
+        console.log(statistic);
+        console.log("-------------");
+    }
+    );
+}
 
 
 const imageArray = fs.readdirSync(__dirname + "/assets")
