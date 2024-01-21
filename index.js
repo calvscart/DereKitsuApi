@@ -26,10 +26,8 @@ app.get("/", (req, res, next) => {
         ]
     })
 })
-const port = process.env['PORT'] || 3000
-app.listen(port, () =>{
-    console.log(`App is now listening on port ${port}`)
-})
+app.listen(process.env.PORT || 3000, function () {
+  console.log(`[Running on port: 3000]`);
 
 const compress = (pathFromFile, pathToFile) => {
     compress_images(pathFromFile, pathToFile, { compress_force: false, statistic: true, autoupdate: true }, false,
